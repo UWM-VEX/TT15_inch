@@ -39,7 +39,7 @@
 /**
  * You should add more #includes here
  */
-//#include "okapi/api.hpp"
+ #include "okapi/api.hpp"
 //#include "pros/api_legacy.h"
 
 /**
@@ -53,6 +53,12 @@
 // using namespace pros;
 // using namespace pros::literals;
 // using namespace okapi;
+#define RED 0
+#define BLUE 1
+
+#include "drive.hpp"
+#include "Lift.hpp"
+#include "auto.hpp"
 
 /**
  * Prototypes for the competition control tasks are redefined here to ensure
