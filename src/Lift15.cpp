@@ -6,7 +6,7 @@ Lift15::Lift15(int llm, int lrm, int ulm, int urm, int am, int bgm, int fgm)
   lowerLeftMotor->setGearing(okapi::AbstractMotor::gearset::red);
   lowerLeftMotor->setEncoderUnits(okapi::AbstractMotor::encoderUnits::degrees);
   lowerRightMotor = new okapi::Motor(lrm);
-  lowerRightMotor->setGearing(okapi::AbstractMotor::gearset::green);
+  lowerRightMotor->setGearing(okapi::AbstractMotor::gearset::red);
   lowerRightMotor->setEncoderUnits(okapi::AbstractMotor::encoderUnits::degrees);
   upperLeftMotor = new okapi::Motor(ulm);
   upperLeftMotor->setGearing(okapi::AbstractMotor::gearset::red);
@@ -45,7 +45,8 @@ Lift15::~Lift15()
   delete upperLeftMotor;
   delete upperRightMotor;
   delete angleMotor;
-  delete grabberMotor;
+  delete backGrabberMotor;
+  delete frontGrabberMotor;
 }
 
 void Lift15::moveMotorToHeight(int degrees)
@@ -57,7 +58,9 @@ void Lift15::moveMotorToHeight(int degrees)
   angleMotor->moveAbsolute((int)(degrees * gearRatio), 60);
 }
 
-void Lift15::grab(int power)
+void Lift15::grab(double power)
 {
-  grabberMotor->moveVoltage(power); //make sure to adjust
+  power = power * 12000;
+  frontGrabberMotor->moveVoltage(power); //make sure to adjust
+  backGrabberMotor->moveVoltage(-power);
 }

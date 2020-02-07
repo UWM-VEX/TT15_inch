@@ -34,12 +34,8 @@ void autonomous() {}
 
 
 void opcontrol() {
-	pros::Controller master(pros::E_CONTROLLER_MASTER);
-	pros::Controller partner(pros::E_CONTROLLER_PARTNER);
-
-//	bool state = false;
-//	pros::ADIDigitalOut pneumatic(_DIGITAL_SENSOR_PORT_, state);
-//	pros::ADIDigitalOut pneumatic (_DIGITAL_SENSOR_PORT_);
+	okapi::Controller master(okapi::ControllerId::master);
+	okapi::Controller partner(okapi::ControllerId::partner);
 
 	//declare chassis drive
 	okapi::ChassisControllerIntegrated opcontrolDrive = RobotDrive.makeDrive();
@@ -47,6 +43,13 @@ void opcontrol() {
 
 	while(true){
 
+		double leftX = master.getAnalog(okapi::ControllerAnalog::leftX);
+		double leftY = master.getAnalog(okapi::ControllerAnalog::leftY);
+		double rightX = master.getAnalog(okapi::ControllerAnalog::rightX);
+		double rightY = master.getAnalog(okapi::ControllerAnalog::rightY);
+
+		opcontrolDrive.arcade(leftX, leftY);
+		lift->grab(rightY);
 
 		// //pros::lcd::print(0, "%d " "%d " "%d", RobotLift.getLiftPos(), partner.get_analog(ANALOG_LEFT_Y), state);
 		//
@@ -81,5 +84,7 @@ void opcontrol() {
 		// else{
 		// 	pneumatic.set_value(false);
 		// }
+
+		pros::delay(50);
 	}
 }
