@@ -1,17 +1,17 @@
 #include "main.h"
 
 #define _DIGITAL_SENSOR_PORT_ 'G'
-#define lowerLeftMotor 6
-#define upperLeftMotor 6
+#define lowerLeftMotor 5
+#define upperLeftMotor 3
 #define lowerRightMotor 6
-#define upperRightMotor 6
-#define backLeftMotor 6
-#define frontLeftMotor 6
-#define backRightMotor 6
-#define frontRightMotor 6
-#define angleMotor 6
-#define frontGrabMotor 6
-#define backGrabMotor 6
+#define upperRightMotor 4
+#define backLeftMotor 1
+#define frontLeftMotor 9
+#define backRightMotor 2
+#define frontRightMotor 10
+#define angleMotor 17
+#define frontGrabMotor 14
+#define backGrabMotor 13
 
 void initialize() {
 	//pros::lcd::initialize();

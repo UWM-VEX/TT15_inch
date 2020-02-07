@@ -21,6 +21,6 @@ okapi::ChassisControllerIntegrated Drive::makeDrive()
   return ChassisControllerFactory::create(
     {middleLeft, backLeft}, {middleRight, backRight},
     AbstractMotor::gearset::green,
-    {4_in, 10.5_in}
+    {4_in, 10.75_in}
   );
 }
