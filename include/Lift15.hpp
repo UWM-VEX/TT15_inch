@@ -5,7 +5,7 @@
 class Lift15
 {
 public:
-  Lift15(int llm, int lrm, int ulm, int urm, int am, int gm);
+  Lift15(int llm, int lrm, int ulm, int urm, int am, int bgm, int fgm);
   ~Lift15();
   void moveMotorToHeight(int degrees);
   void grab(int power);
@@ -17,7 +17,8 @@ private:
   okapi::Motor * upperLeftMotor;
   okapi::Motor * upperRightMotor;
   okapi::Motor * angleMotor;
-  okapi::Motor * grabberMotor;
+  okapi::Motor * backGrabberMotor;
+  okapi::Motor * frontGrabberMotor;
   double gearRatio;
 
 } typedef Lift15;

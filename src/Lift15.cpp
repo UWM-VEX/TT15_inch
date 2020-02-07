@@ -1,25 +1,28 @@
 #include "Lift15.hpp"
 
-Lift15::Lift15(int llm, int lrm, int ulm, int urm, int am, int gm)
+Lift15::Lift15(int llm, int lrm, int ulm, int urm, int am, int bgm, int fgm)
 {
   lowerLeftMotor = new okapi::Motor(llm);
-  lowerLeftMotor->setGearing(okapi::AbstractMotor::gearset::green);
+  lowerLeftMotor->setGearing(okapi::AbstractMotor::gearset::red);
   lowerLeftMotor->setEncoderUnits(okapi::AbstractMotor::encoderUnits::degrees);
   lowerRightMotor = new okapi::Motor(lrm);
   lowerRightMotor->setGearing(okapi::AbstractMotor::gearset::green);
   lowerRightMotor->setEncoderUnits(okapi::AbstractMotor::encoderUnits::degrees);
   upperLeftMotor = new okapi::Motor(ulm);
-  upperLeftMotor->setGearing(okapi::AbstractMotor::gearset::green);
+  upperLeftMotor->setGearing(okapi::AbstractMotor::gearset::red);
   upperLeftMotor->setEncoderUnits(okapi::AbstractMotor::encoderUnits::degrees);
   upperRightMotor = new okapi::Motor(urm);
-  upperRightMotor->setGearing(okapi::AbstractMotor::gearset::green);
+  upperRightMotor->setGearing(okapi::AbstractMotor::gearset::red);
   upperRightMotor->setEncoderUnits(okapi::AbstractMotor::encoderUnits::degrees);
   angleMotor = new okapi::Motor(am);
   angleMotor->setGearing(okapi::AbstractMotor::gearset::green);
   angleMotor->setEncoderUnits(okapi::AbstractMotor::encoderUnits::degrees);
-  grabberMotor = new okapi::Motor(gm);
-  grabberMotor->setGearing(okapi::AbstractMotor::gearset::green);
-  grabberMotor->setEncoderUnits(okapi::AbstractMotor::encoderUnits::degrees);
+  backGrabberMotor = new okapi::Motor(bgm);
+  backGrabberMotor->setGearing(okapi::AbstractMotor::gearset::green);
+  backGrabberMotor->setEncoderUnits(okapi::AbstractMotor::encoderUnits::degrees);
+  frontGrabberMotor = new okapi::Motor(fgm);
+  frontGrabberMotor->setGearing(okapi::AbstractMotor::gearset::green);
+  frontGrabberMotor->setEncoderUnits(okapi::AbstractMotor::encoderUnits::degrees);
 
   gearRatio = .5; //the ratio between how much the angle motor needs to move releative to the
                   //lift motors
