@@ -9,6 +9,7 @@ public:
   ~Lift15();
   void moveMotorToHeight(int degrees);
   void grab(double power);
+  void moveLift(double power);
 
 private:
   int heights[9];

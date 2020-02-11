@@ -64,3 +64,12 @@ void Lift15::grab(double power)
   frontGrabberMotor->moveVoltage(power); //make sure to adjust
   backGrabberMotor->moveVoltage(-power);
 }
+
+void Lift15::moveLift(double power)
+{
+  power = power * 12000;
+  lowerLeftMotor->moveVoltage(power);
+  lowerRightMotor->moveVoltage(power);
+  upperLeftMotor->moveVoltage(-power);
+  upperRightMotor->moveVoltage(-power);
+}
