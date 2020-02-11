@@ -1,17 +1,17 @@
 #include "main.h"
 
 #define _DIGITAL_SENSOR_PORT_ 'G'
-#define lowerLeftMotor 5
-#define upperLeftMotor 3
-#define lowerRightMotor 6
-#define upperRightMotor 4
+#define lowerLeftMotor 17
+#define upperLeftMotor 16
+#define lowerRightMotor 13
+#define upperRightMotor 14
 #define backLeftMotor 1
 #define frontLeftMotor 9
 #define backRightMotor 2
 #define frontRightMotor 10
-#define angleMotor 17
-#define frontGrabMotor 14
-#define backGrabMotor 13
+#define angleMotor 18
+#define frontGrabMotor 11
+#define backGrabMotor 12
 
 void initialize() {
 	//pros::lcd::initialize();
@@ -50,6 +50,9 @@ void opcontrol() {
 
 		opcontrolDrive.arcade(leftX, leftY);
 		lift->grab(rightY);
+
+		double pLeftY= partner.getAnalog(okapi::ControllerAnalog::leftY);
+		lift->moveLift(pLeftY);
 
 		// //pros::lcd::print(0, "%d " "%d " "%d", RobotLift.getLiftPos(), partner.get_analog(ANALOG_LEFT_Y), state);
 		//
