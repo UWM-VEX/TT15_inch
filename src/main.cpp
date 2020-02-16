@@ -12,8 +12,8 @@ int frontRightMotor = 10;
 int angleMotor = 8;
 int frontGrabMotor = 11;
 int backGrabMotor = 12;
-int visionSensor = 10;
-#define gyroPort 'A'
+int visionSensor = 4;
+int gyroPort = 3;
 
 pros::Vision sensor(visionSensor);
 using namespace okapi;
@@ -24,7 +24,7 @@ auto myChassis = okapi::ChassisControllerFactory::create(
 	{4_in, 10.75_in}
 );
 
-okapi::ADIGyro gyro(gyroPort);
+pros::Imu gyro(gyroPort);
 
 void initialize() {
 	pros::lcd::initialize();
@@ -44,7 +44,11 @@ void disabled() {}
 void competition_initialize() {}
 
 
-void autonomous() {}
+void autonomous() {
+	Auto a(& myChassis, & gyro);
+	a.moveDistance(3_ft);
+	a.turnDegrees(90);
+}
 
 
 void opcontrol() {
@@ -66,9 +70,10 @@ void opcontrol() {
 		//opcontrolDrive.arcade(leftY, leftX);
 		lift.grab(rightY);
 
-		pros::lcd::print(0, "%d %d %d", master.getConnectionState(),
-		                 (int)(leftX * 100),
-		                 (int)(leftY * 100));
+		pros::lcd::print(0, "%.3f %.3f %.3f %.3f", gyro.get_rotation(),
+		                 gyro.get_yaw(),
+		                 gyro.get_roll(),
+									 		gyro.get_pitch());
 
 		double pLeftY= partner.getAnalog(okapi::ControllerAnalog::leftY);
 		// lift.moveLift(pLeftY);

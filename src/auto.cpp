@@ -1,6 +1,6 @@
 #include "auto.hpp"
 
-Auto::Auto(okapi::ChassisControllerIntegrated * m, okapi::ADIGyro * g)
+Auto::Auto(okapi::ChassisControllerIntegrated * m, pros::Imu * g)
 {
   drive = m;
   gyro = g;
@@ -8,10 +8,11 @@ Auto::Auto(okapi::ChassisControllerIntegrated * m, okapi::ADIGyro * g)
 
 void Auto::turnDegrees(double degrees)
 {
-  double startDegrees = gyro->get();
+  double startDegrees = gyro->get_rotation();
+  double finalDegrees = startDegrees + degrees;
   drive->turnAngle(degrees);
   double d;
-  while(abs(d = gyro->get() - startDegrees) > DEGREES_MARGIN)
+  while(abs(d = gyro->get_rotation() - finalDegrees) > DEGREES_MARGIN)
   {
     drive->rotate(turnValue(d));
     pros::delay(20);
@@ -19,9 +20,9 @@ void Auto::turnDegrees(double degrees)
 }
 
 
-void Auto::moveDistance(double distance)
+void Auto::moveDistance(okapi::QLength distance)
 {
-
+  drive->moveDistance(distance);
 }
 
 double Auto::abs(double value)
@@ -35,7 +36,7 @@ double Auto::turnValue(double diff)
   double absDiff = abs(diff);
   if(absDiff > 60)
   {
-    result = 1;
+    result = .75;
   }
   else if(absDiff > 30)
   {

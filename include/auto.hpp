@@ -20,15 +20,15 @@ extern AutonomousInfo autonomousInfoStruct;
 class Auto
 {
 public:
-	Auto(okapi::ChassisControllerIntegrated * m, okapi::ADIGyro * g);
+	Auto(okapi::ChassisControllerIntegrated * m, pros::Imu * g);
 	void turnDegrees(double degrees);
-	void moveDistance(double distance);
+	void moveDistance(okapi::QLength distance);
 
 private:
 	okapi::ChassisControllerIntegrated * drive;
-	okapi::ADIGyro * gyro;
+	pros::Imu * gyro;
 	double abs(double value);
 	double turnValue(double difference);
-}
+};
 
 #endif
