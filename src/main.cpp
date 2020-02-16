@@ -13,9 +13,19 @@ int angleMotor = 8;
 int frontGrabMotor = 11;
 int backGrabMotor = 12;
 int visionSensor = 10;
+#define gyroPort 'A'
 
-//pros::Vision sensor(visionSensor);
+pros::Vision sensor(visionSensor);
 using namespace okapi;
+
+auto myChassis = okapi::ChassisControllerFactory::create(
+	{-backLeftMotor,-frontLeftMotor}, {backRightMotor,frontRightMotor},
+	okapi::AbstractMotor::gearset::green,
+	{4_in, 10.75_in}
+);
+
+okapi::ADIGyro gyro(gyroPort);
+
 void initialize() {
 	pros::lcd::initialize();
 	//pros::lcd::initialize();
@@ -40,12 +50,6 @@ void autonomous() {}
 void opcontrol() {
 	okapi::Controller master;
 	okapi::Controller partner(okapi::ControllerId::partner);
-
-		auto myChassis = okapi::ChassisControllerFactory::create(
-			{-backLeftMotor,-frontLeftMotor}, {backRightMotor,frontRightMotor},
-			okapi::AbstractMotor::gearset::green,
-			{4_in, 10.75_in}
-		);
 
 	//declare chassis drive
 	//okapi::ChassisControllerIntegrated opcontrolDrive = RobotDrive.makeDrive();
@@ -114,6 +118,6 @@ void opcontrol() {
 		// 	pneumatic.set_value(false);
 		// }
 
-		pros::delay(2);
+		pros::delay(20);
 	}
 }
