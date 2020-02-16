@@ -1,19 +1,23 @@
 #include "main.h"
 
 #define _DIGITAL_SENSOR_PORT_ 'G'
-#define lowerLeftMotor 17
-#define upperLeftMotor 16
-#define lowerRightMotor 13
-#define upperRightMotor 14
-#define backLeftMotor 1
-#define frontLeftMotor 9
-#define backRightMotor 2
-#define frontRightMotor 10
-#define angleMotor 18
-#define frontGrabMotor 11
-#define backGrabMotor 12
+int lowerLeftMotor = 20;
+int upperLeftMotor = 15;
+int lowerRightMotor = 13;
+int upperRightMotor = 14;
+int backLeftMotor = 1;
+int frontLeftMotor = 9;
+int backRightMotor = 2;
+int frontRightMotor = 10;
+int angleMotor = 8;
+int frontGrabMotor = 11;
+int backGrabMotor = 12;
+int visionSensor = 10;
 
+//pros::Vision sensor(visionSensor);
+using namespace okapi;
 void initialize() {
+	pros::lcd::initialize();
 	//pros::lcd::initialize();
 	//pros::lcd::set_text(1, "Hello PROS User!");
 
@@ -34,25 +38,47 @@ void autonomous() {}
 
 
 void opcontrol() {
-	okapi::Controller master(okapi::ControllerId::master);
+	okapi::Controller master;
 	okapi::Controller partner(okapi::ControllerId::partner);
 
+		auto myChassis = okapi::ChassisControllerFactory::create(
+			{-backLeftMotor,-frontLeftMotor}, {backRightMotor,frontRightMotor},
+			okapi::AbstractMotor::gearset::green,
+			{4_in, 10.75_in}
+		);
+
 	//declare chassis drive
-	okapi::ChassisControllerIntegrated opcontrolDrive = RobotDrive.makeDrive();
-	Lift15 * lift = new Lift15(lowerLeftMotor, lowerRightMotor, upperLeftMotor, upperRightMotor, angleMotor, backGrabMotor, frontGrabMotor);
+	//okapi::ChassisControllerIntegrated opcontrolDrive = RobotDrive.makeDrive();
+	Lift15 lift = Lift15(lowerLeftMotor, lowerRightMotor, upperLeftMotor, upperRightMotor, angleMotor, backGrabMotor, frontGrabMotor);
 
 	while(true){
 
-		double leftX = master.getAnalog(okapi::ControllerAnalog::leftX);
-		double leftY = master.getAnalog(okapi::ControllerAnalog::leftY);
-		double rightX = master.getAnalog(okapi::ControllerAnalog::rightX);
-		double rightY = master.getAnalog(okapi::ControllerAnalog::rightY);
+		float leftX = master.getAnalog(okapi::ControllerAnalog::leftX);
+		float leftY = master.getAnalog(okapi::ControllerAnalog::leftY);
+		float rightX = master.getAnalog(okapi::ControllerAnalog::rightX);
+		float rightY = master.getAnalog(okapi::ControllerAnalog::rightY);
 
-		opcontrolDrive.arcade(leftX, leftY);
-		lift->grab(rightY);
+		myChassis.arcade(-leftY, -leftX);
+		//opcontrolDrive.arcade(leftY, leftX);
+		lift.grab(rightY);
+
+		pros::lcd::print(0, "%d %d %d", master.getConnectionState(),
+		                 (int)(leftX * 100),
+		                 (int)(leftY * 100));
 
 		double pLeftY= partner.getAnalog(okapi::ControllerAnalog::leftY);
-		lift->moveLift(pLeftY);
+		// lift.moveLift(pLeftY);
+		lift.moveMotorToHeight((partner.getDigital(okapi::ControllerDigital::A)) ? 850 : 0);
+		int deg = 0;
+		if(partner.getDigital(okapi::ControllerDigital::X))
+		{
+			deg = 40;
+		}
+		else if(partner.getDigital(okapi::ControllerDigital::B))
+		{
+			deg = 260;
+		}
+		lift.angleGrabber(deg);
 
 		// //pros::lcd::print(0, "%d " "%d " "%d", RobotLift.getLiftPos(), partner.get_analog(ANALOG_LEFT_Y), state);
 		//
@@ -88,6 +114,6 @@ void opcontrol() {
 		// 	pneumatic.set_value(false);
 		// }
 
-		pros::delay(50);
+		pros::delay(2);
 	}
 }

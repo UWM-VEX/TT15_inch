@@ -28,7 +28,7 @@ Lift15::Lift15(int llm, int lrm, int ulm, int urm, int am, int bgm, int fgm)
                   //lift motors
 
   heights[0] = 0; //zero height
-  heights[1] = 190; //cube 2
+  heights[1] = 850; //max height
   heights[2] = 330; //cube 3
   heights[3] = 470; //cube 4
   heights[4] = 620; //cube 5
@@ -36,6 +36,10 @@ Lift15::Lift15(int llm, int lrm, int ulm, int urm, int am, int bgm, int fgm)
   heights[6] = 730; //mid tower
   heights[7] = 550; //lower tower
   heights[8] = 50;  //raise over corner border
+
+  angles[0] = 0;
+  angles[1] = 260; //straight down
+  angles[2] = 40; //angled up.
 }
 
 Lift15::~Lift15()
@@ -52,24 +56,29 @@ Lift15::~Lift15()
 void Lift15::moveMotorToHeight(int degrees)
 {
   lowerLeftMotor->moveAbsolute(-degrees, 60);
-  lowerRightMotor->moveAbsolute(-degrees, 60);
+  lowerRightMotor->moveAbsolute(degrees, 60);
   upperLeftMotor->moveAbsolute(degrees, 60);
-  upperRightMotor->moveAbsolute(degrees, 60);
-  angleMotor->moveAbsolute((int)(degrees * gearRatio), 60);
+  upperRightMotor->moveAbsolute(-degrees, 60);
+  //angleMotor->moveAbsolute((int)(degrees * gearRatio), 60);
 }
 
-void Lift15::grab(double power)
+void Lift15::angleGrabber(int degrees)
 {
-  power = power * 12000;
-  frontGrabberMotor->moveVoltage(power); //make sure to adjust
-  backGrabberMotor->moveVoltage(-power);
+  angleMotor->moveAbsolute(degrees, 60);
 }
 
-void Lift15::moveLift(double power)
+void Lift15::grab(float power)
 {
-  power = power * 12000;
-  lowerLeftMotor->moveVoltage(power);
-  lowerRightMotor->moveVoltage(power);
-  upperLeftMotor->moveVoltage(-power);
-  upperRightMotor->moveVoltage(-power);
+  int ipower = (int) (power * 12000);
+  frontGrabberMotor->moveVoltage(ipower); //make sure to adjust
+  backGrabberMotor->moveVoltage(-ipower);
+}
+
+void Lift15::moveLift(float power)
+{
+  int ipower = (int) (power * 12000);
+  lowerLeftMotor->moveVoltage(-ipower);
+  lowerRightMotor->moveVoltage(ipower);
+  upperLeftMotor->moveVoltage(ipower);
+  upperRightMotor->moveVoltage(-ipower);
 }
