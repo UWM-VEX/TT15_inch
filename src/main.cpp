@@ -26,6 +26,8 @@ auto myChassis = okapi::ChassisControllerFactory::create(
 
 pros::Imu gyro(gyroPort);
 
+Lift15 lift = Lift15(lowerLeftMotor, lowerRightMotor, upperLeftMotor, upperRightMotor, angleMotor, backGrabMotor, frontGrabMotor);
+
 void initialize() {
 	pros::lcd::initialize();
 	//pros::lcd::initialize();
@@ -33,6 +35,7 @@ void initialize() {
 
 	//pros::lcd::register_btn1_cb(on_center_button);
 	RobotDrive.initDrive(frontLeftMotor,backLeftMotor,-frontRightMotor,-backRightMotor);
+	gyro.reset();
 
 //	lcdModeSelect();
 }
@@ -45,7 +48,7 @@ void competition_initialize() {}
 
 
 void autonomous() {
-	Auto a(& myChassis, & gyro);
+	Auto a(& myChassis, & gyro, & lift);
 	a.moveDistance(3_ft);
 	a.turnDegrees(90);
 }
@@ -57,7 +60,6 @@ void opcontrol() {
 
 	//declare chassis drive
 	//okapi::ChassisControllerIntegrated opcontrolDrive = RobotDrive.makeDrive();
-	Lift15 lift = Lift15(lowerLeftMotor, lowerRightMotor, upperLeftMotor, upperRightMotor, angleMotor, backGrabMotor, frontGrabMotor);
 
 	while(true){
 

@@ -1,9 +1,10 @@
 #include "auto.hpp"
 
-Auto::Auto(okapi::ChassisControllerIntegrated * m, pros::Imu * g)
+Auto::Auto(okapi::ChassisControllerIntegrated * m, pros::Imu * g, Lift15 * l)
 {
   drive = m;
   gyro = g;
+  lift = l;
 }
 
 void Auto::turnDegrees(double degrees)
@@ -19,10 +20,14 @@ void Auto::turnDegrees(double degrees)
   }
 }
 
-
 void Auto::moveDistance(okapi::QLength distance)
 {
   drive->moveDistance(distance);
+}
+
+void Auto::grab(double power)
+{
+  lift->grab(power);
 }
 
 double Auto::abs(double value)
