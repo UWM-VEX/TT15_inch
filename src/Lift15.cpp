@@ -75,9 +75,8 @@ void Lift15::angleGrabber(int degrees)
   angleMotor->moveAbsolute(degrees, 60);
 }
 
-void Lift15::grab(float power)
+void Lift15::grab(float ipower)
 {
-  int ipower = (int) (power * 12000);
   frontGrabberMotor->moveVoltage(ipower); //make sure to adjust
   backGrabberMotor->moveVoltage(-ipower);
 }
@@ -99,4 +98,15 @@ void Lift15::moveUp()
 void Lift15::moveDown()
 {
   if(height > 0) --height;
+}
+
+
+void Lift15::grabCube()
+{
+  grab(12000);
+}
+
+void Lift15::releaseCube()
+{
+  grab(-12000);
 }

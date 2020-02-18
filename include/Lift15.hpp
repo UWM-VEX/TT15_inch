@@ -14,6 +14,8 @@ public:
   void moveUp();
   void moveDown();
   void moveToCube();
+  void grabCube();
+  void releaseCube();
   int getHeight() { return height; };
   int degrees() { return (int)lowerLeftMotor->getPosition(); }
 
