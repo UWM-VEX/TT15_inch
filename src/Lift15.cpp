@@ -98,5 +98,9 @@ void Lift15::moveUp()
 
 void Lift15::moveDown()
 {
+<<<<<<< HEAD
   if(height > 0) --height;
+=======
+  if(height > 1) --height;
+>>>>>>> 8d8e88a30b701457b2358be0021aa312ed7beea0
 }
