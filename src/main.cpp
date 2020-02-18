@@ -19,7 +19,7 @@ pros::Vision sensor(visionSensor);
 using namespace okapi;
 
 auto myChassis = okapi::ChassisControllerFactory::create(
-	{-backLeftMotor,-frontLeftMotor}, {backRightMotor,frontRightMotor},
+	{backLeftMotor,frontLeftMotor}, {-backRightMotor,-frontRightMotor},
 	okapi::AbstractMotor::gearset::green,
 	{4_in, 10.75_in}
 );
@@ -40,6 +40,15 @@ void initialize() {
 //	lcdModeSelect();
 }
 
+void on_center_button() {
+	static bool pressed = false;
+	pressed = !pressed;
+	if (pressed) {
+		pros::lcd::set_text(2, "I was pressed!");
+	} else {
+		pros::lcd::clear_line(2);
+	}
+}
 
 void disabled() {}
 
@@ -57,7 +66,7 @@ void autonomous() {
 void opcontrol() {
 	okapi::Controller master;
 	okapi::Controller partner(okapi::ControllerId::partner);
-
+	bool pUpOnLast = false, pDownOnLast = false;
 	//declare chassis drive
 	//okapi::ChassisControllerIntegrated opcontrolDrive = RobotDrive.makeDrive();
 
@@ -68,7 +77,7 @@ void opcontrol() {
 		float rightX = master.getAnalog(okapi::ControllerAnalog::rightX);
 		float rightY = master.getAnalog(okapi::ControllerAnalog::rightY);
 
-		myChassis.arcade(-leftY, -leftX);
+		myChassis.arcade(leftY, leftX);
 		//opcontrolDrive.arcade(leftY, leftX);
 		lift.grab(rightY);
 
@@ -79,7 +88,32 @@ void opcontrol() {
 
 		double pLeftY= partner.getAnalog(okapi::ControllerAnalog::leftY);
 		// lift.moveLift(pLeftY);
-		lift.moveMotorToHeight((partner.getDigital(okapi::ControllerDigital::A)) ? 850 : 0);
+		// lift.moveMotorToHeight((partner.getDigital(okapi::ControllerDigital::A)) ? 850 : 0);
+
+		bool upOn = partner.getDigital(ControllerDigital::up);
+		bool downOn = partner.getDigital(ControllerDigital::down);
+
+		if(!pUpOnLast && upOn)
+		{
+			lift.moveUp();
+			pUpOnLast = true;
+		}
+		else if(!upOn && pUpOnLast)
+		{
+			pUpOnLast = false;
+		}
+
+		if(!pDownOnLast && downOn)
+		{
+			lift.moveDown();
+			pDownOnLast = true;
+		}
+		else if(!downOn && pDownOnLast)
+		{
+			pDownOnLast = false;
+		}
+
+		lift.moveToCube();
 		int deg = 0;
 		if(partner.getDigital(okapi::ControllerDigital::X))
 		{

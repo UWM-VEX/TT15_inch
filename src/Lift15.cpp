@@ -28,11 +28,12 @@ Lift15::Lift15(int llm, int lrm, int ulm, int urm, int am, int bgm, int fgm)
                   //lift motors
 
   heights[0] = 0; //zero height
-  heights[1] = 850; //max height
+  heights[1] = 170; //max height
   heights[2] = 330; //cube 3
   heights[3] = 470; //cube 4
   heights[4] = 620; //cube 5
-  heights[5] = 840; //cube 6
+  heights[5] = 850; //max height
+
   heights[6] = 730; //mid tower
   heights[7] = 550; //lower tower
   heights[8] = 50;  //raise over corner border
@@ -40,6 +41,8 @@ Lift15::Lift15(int llm, int lrm, int ulm, int urm, int am, int bgm, int fgm)
   angles[0] = 0;
   angles[1] = 260; //straight down
   angles[2] = 40; //angled up.
+
+  height = 0;
 }
 
 Lift15::~Lift15()
@@ -62,6 +65,11 @@ void Lift15::moveMotorToHeight(int degrees)
   //angleMotor->moveAbsolute((int)(degrees * gearRatio), 60);
 }
 
+void Lift15::moveToCube()
+{
+  moveMotorToHeight(heights[height]);
+}
+
 void Lift15::angleGrabber(int degrees)
 {
   angleMotor->moveAbsolute(degrees, 60);
@@ -81,4 +89,14 @@ void Lift15::moveLift(float power)
   lowerRightMotor->moveVoltage(ipower);
   upperLeftMotor->moveVoltage(ipower);
   upperRightMotor->moveVoltage(-ipower);
+}
+
+void Lift15::moveUp()
+{
+  if(height < 5) ++height;
+}
+
+void Lift15::moveDown()
+{
+  if(height > 1) --height;
 }
