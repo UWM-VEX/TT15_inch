@@ -5,10 +5,10 @@ int lowerLeftMotor = 20;
 int upperLeftMotor = 15;
 int lowerRightMotor = 13;
 int upperRightMotor = 14;
-int backLeftMotor = 1;
-int frontLeftMotor = 9;
-int backRightMotor = 2;
-int frontRightMotor = 10;
+int8_t backLeftMotor = 1;
+int8_t frontLeftMotor = 9;
+int8_t backRightMotor = 2;
+int8_t frontRightMotor = 10;
 int angleMotor = 8;
 int frontGrabMotor = 11;
 int backGrabMotor = 12;
@@ -19,7 +19,7 @@ int gyroPort = 3;
 using namespace okapi;
 
 auto myChassis = okapi::ChassisControllerFactory::create(
-	{backLeftMotor,frontLeftMotor}, {-backRightMotor,-frontRightMotor},
+	{backLeftMotor,frontLeftMotor}, {(int8_t)-backRightMotor,(int8_t)-frontRightMotor},
 	okapi::AbstractMotor::gearset::green,
 	{4_in, 10.75_in}
 );
@@ -38,16 +38,6 @@ void initialize() {
 	// gyro.reset();
 
 //	lcdModeSelect();
-}
-
-void on_center_button() {
-	static bool pressed = false;
-	pressed = !pressed;
-	if (pressed) {
-		pros::lcd::set_text(2, "I was pressed!");
-	} else {
-		pros::lcd::clear_line(2);
-	}
 }
 
 void disabled() {}
@@ -165,4 +155,19 @@ void opcontrol() {
 
 		pros::delay(20);
 	}
+}
+
+void control1()
+{
+
+}
+
+void control2()
+{
+
+}
+
+void control3()
+{
+	
 }

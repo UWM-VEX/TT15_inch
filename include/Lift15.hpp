@@ -14,11 +14,8 @@ public:
   void moveUp();
   void moveDown();
   void moveToCube();
-<<<<<<< HEAD
   int getHeight() { return height; };
   int degrees() { return (int)lowerLeftMotor->getPosition(); }
-=======
->>>>>>> 8d8e88a30b701457b2358be0021aa312ed7beea0
 
 private:
   int heights[9];
