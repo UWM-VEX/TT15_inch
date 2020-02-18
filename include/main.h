@@ -73,6 +73,10 @@ void initialize(void);
 void disabled(void);
 void competition_initialize(void);
 void opcontrol(void);
+void control1(okapi::Controller & master, okapi::Controller & partner);
+void control2(okapi::Controller & master, okapi::Controller & partner);
+void control3(okapi::Controller & master, okapi::Controller & partner);
+void control4(okapi::Controller & master, okapi::Controller & partner);
 #ifdef __cplusplus
 }
 #endif
