@@ -1,23 +1,48 @@
 #include "auto.hpp"
 
-Auto::Auto(okapi::ChassisControllerIntegrated * m, pros::Imu * g, Lift15 * l)
+using namespace okapi;
+
+std::shared_ptr<okapi::AsyncMotionProfileController> profileController;
+
+okapi::Timer stopwatch;
+
+Auto::Auto(std::shared_ptr<okapi::ChassisController> & m, pros::Imu * g, Lift15 * l)
 {
   drive = m;
   gyro = g;
   lift = l;
+  profileController =
+    okapi::AsyncMotionProfileControllerBuilder()
+      .withLimits({1.0, 2.0, 10.0})
+      .withOutput(drive)
+      .buildMotionProfileController();
+
+  profileController->generatePath({{0_ft, 0_ft, 0_deg},
+                                   {3_ft, 0_ft, 0_deg}}, "Red");
 }
 
 void Auto::turnDegrees(double degrees)
 {
   double startDegrees = gyro->get_rotation();
   double finalDegrees = startDegrees + degrees;
-  drive->turnAngle(degrees);
+  drive->turnAngle(okapi::QAngle(degrees));
   double d;
   while(abs(d = gyro->get_rotation() - finalDegrees) > DEGREES_MARGIN)
   {
-    drive->rotate(turnValue(d));
+    drive->model().rotate(turnValue(d));
     pros::delay(20);
   }
+}
+
+void Auto::redAuto()
+{
+  profileController->setTarget("Red");
+
+}
+
+void Auto::blueAuto()
+{
+
 }
 
 void Auto::moveDistance(okapi::QLength distance)
@@ -30,7 +55,7 @@ void Auto::grab(double power)
   lift->grab(power);
 }
 
-double Auto::abs(double value)
+inline double Auto::abs(double value)
 {
   return value > 0 ? value : value * -1;
 }

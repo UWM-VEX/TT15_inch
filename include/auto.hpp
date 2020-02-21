@@ -11,6 +11,11 @@ struct AutonomousInfo {
 }typedef AutonomousInfo;
 
 extern AutonomousInfo autonomousInfoStruct;
+namespace Auton
+{
+	enum class team {RED_TEAM, BLUE_TEAM};
+	static team selection = team::RED_TEAM;
+}
 
 #define DO_NOTHING 0
 #define TEST 1
@@ -20,17 +25,20 @@ extern AutonomousInfo autonomousInfoStruct;
 class Auto
 {
 public:
-	Auto(okapi::ChassisControllerIntegrated * m, pros::Imu * g, Lift15 * l);
+	Auto(std::shared_ptr<okapi::ChassisController> & d, pros::Imu * g, Lift15 * l);
 	void turnDegrees(double degrees);
 	void moveDistance(okapi::QLength distance);
 	void grab(double power);
+	void redAuto();
+	void blueAuto();
 
 private:
-	okapi::ChassisControllerIntegrated * drive;
+	std::shared_ptr<okapi::ChassisController> drive;
 	pros::Imu * gyro;
 	double abs(double value);
 	double turnValue(double difference);
 	Lift15 * lift;
 };
+
 
 #endif

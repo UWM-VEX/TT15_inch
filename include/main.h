@@ -56,7 +56,7 @@
 #define RED 0
 #define BLUE 1
 
-#include "drive.hpp"
+//#include "drive.hpp"
 #include "Lift15.hpp"
 #include "auto.hpp"
 
@@ -77,6 +77,8 @@ void control1(okapi::Controller & master, okapi::Controller & partner);
 void control2(okapi::Controller & master, okapi::Controller & partner);
 void control3(okapi::Controller & master, okapi::Controller & partner);
 void control4(okapi::Controller & master, okapi::Controller & partner);
+void left();
+void right();
 #ifdef __cplusplus
 }
 #endif

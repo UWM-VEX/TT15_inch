@@ -18,24 +18,37 @@ int gyroPort = 3;
 // pros::Vision sensor(visionSensor);
 using namespace okapi;
 
-auto myChassis = okapi::ChassisControllerFactory::create(
-	{backLeftMotor,frontLeftMotor}, {(int8_t)-backRightMotor,(int8_t)-frontRightMotor},
-	okapi::AbstractMotor::gearset::green,
-	{4_in, 10.75_in}
-);
+
+auto myChassis = okapi::ChassisControllerBuilder().withMotors({backLeftMotor, frontLeftMotor}, {(std::int8_t)-backRightMotor, (std::int8_t)-frontRightMotor}).withDimensions(
+	okapi::AbstractMotor::gearset::green, {{4_in, 10.75_in}, imev5GreenTPR}).build();
+
+// okapi::Motor backLeft(backLeftMotor, false, okapi::AbstractMotor::gearset::green, okapi::AbstractMotor::encoderUnits::degrees);
+// okapi::Motor frontLeft(frontLeftMotor, false, okapi::AbstractMotor::gearset::green, okapi::AbstractMotor::encoderUnits::degrees);
+// okapi::Motor backRight(backRightMotor, true, okapi::AbstractMotor::gearset::green, okapi::AbstractMotor::encoderUnits::degrees);
+// okapi::Motor frontRight(frontRightMotor, true, okapi::AbstractMotor::gearset::green, okapi::AbstractMotor::encoderUnits::degrees);
+// okapi::MotorGroup left({backLeft, frontLeft});
+// okapi::MotorGroup right({backRight, frontRight});
+// okapi::SkidSteerModel drive(left, right, left.getEncoder(), right.getEncoder(), 1., 12000.);
 
 pros::Imu gyro(gyroPort);
 
 Lift15 lift = Lift15(lowerLeftMotor, lowerRightMotor, upperLeftMotor, upperRightMotor, angleMotor, backGrabMotor, frontGrabMotor);
 
+Auto auton(myChassis, & gyro, & lift);
+
 void initialize() {
 	pros::lcd::initialize();
+	pros::lcd::set_text(4, (Auton::selection == Auton::team::RED_TEAM) ? "Current alliance: Red" : "Current alliance: Blue");
+	pros::lcd::set_text(5, "_____________Alliance_____________");
+	pros::lcd::set_text(6, "_Red_______________________Blue_");
+	pros::lcd::register_btn0_cb(left);
+	pros::lcd::register_btn2_cb(right);
 	//pros::lcd::initialize();
 	//pros::lcd::set_text(1, "Hello PROS User!");
 
 	//pros::lcd::register_btn1_cb(on_center_button);
-	RobotDrive.initDrive(frontLeftMotor,backLeftMotor,-frontRightMotor,-backRightMotor);
-	// gyro.reset();
+	// RobotDrive.initDrive(frontLeftMotor,backLeftMotor,-frontRightMotor,-backRightMotor);
+	gyro.reset();
 
 //	lcdModeSelect();
 }
@@ -47,9 +60,9 @@ void competition_initialize() {}
 
 
 void autonomous() {
-	Auto a(& myChassis, & gyro, & lift);
-	a.moveDistance(3_ft);
-	a.turnDegrees(90);
+	// Auto a(myChassis, & gyro, & lift);
+	// a.moveDistance(3_ft);
+	// a.turnDegrees(90);
 }
 
 
@@ -66,8 +79,8 @@ void opcontrol() {
 
 	while(true){
 
-		pros::lcd::print(0, "%d %d", lift.getHeight(), lift.degrees());
-
+		// pros::lcd::print(0, "%d %d", lift.getHeight(), lift.degrees());
+		//
 		pros::lcd::print(1, "%d %d %d", (int)gyro.get_pitch(), (int)gyro.get_yaw(), (int)gyro.get_roll());
 
 		bool r1On = partner.getDigital(ControllerDigital::R1);
@@ -122,14 +135,15 @@ void control1(okapi::Controller & master, okapi::Controller & partner)
 	float rightX = master.getAnalog(okapi::ControllerAnalog::rightX);
 	float rightY = master.getAnalog(okapi::ControllerAnalog::rightY);
 
-	myChassis.tank(leftY, rightX);
+	myChassis->model().tank(leftY, rightY);
 
 	//opcontrolDrive.arcade(leftY, leftX);
 	if(master.getDigital(ControllerDigital::A))
 		lift.grabCube();
-
-	if(master.getDigital(ControllerDigital::B))
+	else if(master.getDigital(ControllerDigital::B))
 		lift.releaseCube();
+	else
+		lift.grab(0);
 
 
 	double pLeftY= partner.getAnalog(okapi::ControllerAnalog::leftY);
@@ -182,7 +196,7 @@ void control2(okapi::Controller & master, okapi::Controller & partner)
 	float rightX = master.getAnalog(okapi::ControllerAnalog::rightX);
 	float rightY = master.getAnalog(okapi::ControllerAnalog::rightY);
 
-	myChassis.tank(leftY, rightX);
+	myChassis->model().tank(leftY, rightY);
 
 	//opcontrolDrive.arcade(leftY, leftX);
 	if(master.getDigital(ControllerDigital::A))
@@ -197,10 +211,11 @@ void control2(okapi::Controller & master, okapi::Controller & partner)
 
 	if(master.getDigital(ControllerDigital::A))
 		lift.grabCube();
-
-	if(master.getDigital(ControllerDigital::B))
+	else if(master.getDigital(ControllerDigital::B))
 		lift.releaseCube();
-		
+	else
+		lift.grab(0);
+
 	int deg = 0;
 	if(partner.getDigital(okapi::ControllerDigital::X))
 	{
@@ -220,5 +235,19 @@ void control3(okapi::Controller & master, okapi::Controller & partner)
 
 void control4(okapi::Controller & master, okapi::Controller & partner)
 {
+
+}
+
+void left()
+{
+	Auton::selection = Auton::team::RED_TEAM;
+	pros::lcd::set_text(4, "Current alliance: Red");
+
+}
+
+void right()
+{
+	Auton::selection = Auton::team::BLUE_TEAM;
+	pros::lcd::set_text(4, "Current alliance: Blue");
 
 }
