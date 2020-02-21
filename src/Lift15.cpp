@@ -90,6 +90,13 @@ void Lift15::moveLift(float power)
   upperRightMotor->moveVoltage(-ipower);
 }
 
+void Lift15::cubeGrabEasy()
+{
+  moveMotorToHeight(100); //change to height of one cube
+  grabCube();
+  angleGrabber(260);
+}
+
 void Lift15::moveUp()
 {
   if(height < 5) ++height;

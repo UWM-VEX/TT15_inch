@@ -1,3 +1,6 @@
+#ifndef LIFT_H_
+#define LIFT_H_
+
 #include "api.h"
 #include "okapi/api.hpp"
 #include "pros/api_legacy.h"
@@ -16,6 +19,7 @@ public:
   void moveToCube();
   void grabCube();
   void releaseCube();
+  void cubeGrabEasy();
   int getHeight() { return height; };
   int degrees() { return (int)lowerLeftMotor->getPosition(); }
 
@@ -33,3 +37,5 @@ private:
   int height;
 
 } typedef Lift15;
+
+#endif

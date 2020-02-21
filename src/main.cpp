@@ -48,7 +48,7 @@ void initialize() {
 
 	//pros::lcd::register_btn1_cb(on_center_button);
 	// RobotDrive.initDrive(frontLeftMotor,backLeftMotor,-frontRightMotor,-backRightMotor);
-	gyro.reset();
+	// gyro.reset();
 
 //	lcdModeSelect();
 }
@@ -63,6 +63,18 @@ void autonomous() {
 	// Auto a(myChassis, & gyro, & lift);
 	// a.moveDistance(3_ft);
 	// a.turnDegrees(90);
+	while(gyro.is_calibrating())
+		pros::delay(50);
+	// auton.driveStraight(.9);
+	// pros::delay(250);
+	// lift.angleGrabber(0);
+	// auton.turnDegrees(180);
+	// pros::delay(1000);
+	// auton.turnDegrees(-270);
+	// pros::delay(1000);
+	// auton.turnDegrees(90);
+
+	auton.activate();
 }
 
 
@@ -75,16 +87,19 @@ void opcontrol() {
 	bool r1OnLast = false, r2OnLast = false;
 
 	int control = 1;
+	if(!partner.isConnected())
+		control = 3;
 
 
 	while(true){
 
 		// pros::lcd::print(0, "%d %d", lift.getHeight(), lift.degrees());
 		//
-		pros::lcd::print(1, "%d %d %d", (int)gyro.get_pitch(), (int)gyro.get_yaw(), (int)gyro.get_roll());
+		pros::lcd::print(1, "%d %d %d", (int)gyro.get_pitch(), (int)gyro.get_yaw(), (int)gyro.get_rotation());
+		pros::lcd::print(2, "%d", lift.degrees());
 
-		bool r1On = partner.getDigital(ControllerDigital::R1);
-		bool r2On = partner.getDigital(ControllerDigital::R2);
+		bool r1On = master.getDigital(ControllerDigital::R1);
+		bool r2On = master.getDigital(ControllerDigital::R2);
 
 		if(!r1OnLast && r1On)
 		{
@@ -140,7 +155,7 @@ void control1(okapi::Controller & master, okapi::Controller & partner)
 	//opcontrolDrive.arcade(leftY, leftX);
 	if(master.getDigital(ControllerDigital::A))
 		lift.grabCube();
-	else if(master.getDigital(ControllerDigital::B))
+	else if(master.getDigital(ControllerDigital::Y))
 		lift.releaseCube();
 	else
 		lift.grab(0);
@@ -196,22 +211,16 @@ void control2(okapi::Controller & master, okapi::Controller & partner)
 	float rightX = master.getAnalog(okapi::ControllerAnalog::rightX);
 	float rightY = master.getAnalog(okapi::ControllerAnalog::rightY);
 
-	myChassis->model().tank(leftY, rightY);
-
+	// myChassis->model().tank(leftY, rightY);
+	myChassis->model().arcade(leftY, leftX);
 	//opcontrolDrive.arcade(leftY, leftX);
-	if(master.getDigital(ControllerDigital::A))
-		lift.grabCube();
-
-	if(master.getDigital(ControllerDigital::B))
-		lift.releaseCube();
-
 
 	double pLeftY= partner.getAnalog(okapi::ControllerAnalog::leftY);
 	lift.moveLift(pLeftY);
 
 	if(master.getDigital(ControllerDigital::A))
 		lift.grabCube();
-	else if(master.getDigital(ControllerDigital::B))
+	else if(master.getDigital(ControllerDigital::Y))
 		lift.releaseCube();
 	else
 		lift.grab(0);
@@ -231,6 +240,40 @@ void control2(okapi::Controller & master, okapi::Controller & partner)
 void control3(okapi::Controller & master, okapi::Controller & partner)
 {
 
+	static bool pUpOnLast = false, pDownOnLast = false;
+
+	float leftX = master.getAnalog(okapi::ControllerAnalog::leftX);
+	float leftY = master.getAnalog(okapi::ControllerAnalog::leftY);
+	float rightX = master.getAnalog(okapi::ControllerAnalog::rightX);
+	float rightY = master.getAnalog(okapi::ControllerAnalog::rightY);
+
+	myChassis->model().arcade(leftY, leftX);
+
+	lift.moveLift(rightY);
+
+	if(master.getDigital(okapi::ControllerDigital::up))
+	{
+		lift.cubeGrabEasy();
+		return;
+	}
+
+	if(master.getDigital(ControllerDigital::Y))
+		lift.grabCube();
+	else if(master.getDigital(ControllerDigital::X))
+		lift.releaseCube();
+	else
+		lift.grab(0);
+
+	int deg = 0;
+	if(master.getDigital(okapi::ControllerDigital::A))
+	{
+		deg = 40;
+	}
+	else if(master.getDigital(okapi::ControllerDigital::B))
+	{
+		deg = 260;
+	}
+	lift.angleGrabber(deg);
 }
 
 void control4(okapi::Controller & master, okapi::Controller & partner)

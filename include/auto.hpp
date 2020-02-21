@@ -20,7 +20,7 @@ namespace Auton
 #define DO_NOTHING 0
 #define TEST 1
 #define TOWERS 2
-#define DEGREES_MARGIN 3
+#define DEGREES_MARGIN 1
 
 class Auto
 {
@@ -31,12 +31,15 @@ public:
 	void grab(double power);
 	void redAuto();
 	void blueAuto();
+	void driveStraight(double power);
+	void activate();
+	void grabForMillis(int millis);
 
 private:
 	std::shared_ptr<okapi::ChassisController> drive;
 	pros::Imu * gyro;
 	double abs(double value);
-	double turnValue(double difference);
+	double turnValue(double difference, double margin = .7);
 	Lift15 * lift;
 };
 
