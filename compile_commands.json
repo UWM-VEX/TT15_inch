@@ -30,11 +30,11 @@
             "-funwind-tables",
             "--std=gnu++17",
             "-o",
-            "bin/main.cpp.o",
-            "src\\main.cpp"
+            "bin/auto.cpp.o",
+            "src\\auto.cpp"
         ],
         "directory": "C:\\Users\\Spin Doctor\\Desktop\\robots projects\\TT15_inch",
-        "file": "src\\main.cpp"
+        "file": "src\\auto.cpp"
     },
     {
         "arguments": [
@@ -104,10 +104,10 @@
             "-funwind-tables",
             "--std=gnu++17",
             "-o",
-            "bin/auto.cpp.o",
-            "src\\auto.cpp"
+            "bin/main.cpp.o",
+            "src\\main.cpp"
         ],
         "directory": "C:\\Users\\Spin Doctor\\Desktop\\robots projects\\TT15_inch",
-        "file": "src\\auto.cpp"
+        "file": "src\\main.cpp"
     }
 ]

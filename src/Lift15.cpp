@@ -15,7 +15,7 @@ Lift15::Lift15(int llm, int lrm, int ulm, int urm, int am, int bgm, int fgm)
   upperRightMotor->setGearing(okapi::AbstractMotor::gearset::red);
   upperRightMotor->setEncoderUnits(okapi::AbstractMotor::encoderUnits::degrees);
   angleMotor = new okapi::Motor(am);
-  angleMotor->setGearing(okapi::AbstractMotor::gearset::green);
+  angleMotor->setGearing(okapi::AbstractMotor::gearset::red);
   angleMotor->setEncoderUnits(okapi::AbstractMotor::encoderUnits::degrees);
   backGrabberMotor = new okapi::Motor(bgm);
   backGrabberMotor->setGearing(okapi::AbstractMotor::gearset::green);
@@ -28,21 +28,22 @@ Lift15::Lift15(int llm, int lrm, int ulm, int urm, int am, int bgm, int fgm)
                   //lift motors
 
   heights[0] = 0; //zero height
-  heights[1] = 170; //max height
-  heights[2] = 330; //cube 3
-  heights[3] = 470; //cube 4
-  heights[4] = 620; //cube 5
-  heights[5] = 850; //max height
+  heights[1] = 50; //max height
+  heights[2] = 150; //cube 3
+  heights[3] = 300; //cube 4
+  heights[4] = 450; //max
+  heights[5] = 450; //max height
 
-  heights[6] = 730; //mid tower
-  heights[7] = 550; //lower tower
-  heights[8] = 50;  //raise over corner border
+  heights[6] = 730; //blank 1
+  heights[7] = 550; //blank 2
+  heights[8] = 50;  //blank 3
 
   angles[0] = 0;
   angles[1] = 260; //straight down
   angles[2] = 40; //angled up.
 
   height = 0;
+  adjust = 0;
 }
 
 Lift15::~Lift15()
@@ -65,14 +66,14 @@ void Lift15::moveMotorToHeight(int degrees)
   //angleMotor->moveAbsolute((int)(degrees * gearRatio), 60);
 }
 
-void Lift15::moveToCube()
+void Lift15::moveToCube(int hi)
 {
-  moveMotorToHeight(heights[height]);
+  moveMotorToHeight(heights[hi]);
 }
 
 void Lift15::angleGrabber(int degrees)
 {
-  angleMotor->moveAbsolute(degrees, 60);
+  angleMotor->moveAbsolute(degrees + adjust, 60);
 }
 
 void Lift15::grab(float ipower)
@@ -83,6 +84,9 @@ void Lift15::grab(float ipower)
 
 void Lift15::moveLift(float power)
 {
+  if(lowerRightMotor->getPosition() > 460 || lowerRightMotor->getPosition() < -10)
+    power = 0;
+
   int ipower = (int) (power * 12000);
   lowerLeftMotor->moveVoltage(-ipower);
   lowerRightMotor->moveVoltage(ipower);
@@ -116,4 +120,14 @@ void Lift15::grabCube()
 void Lift15::releaseCube()
 {
   grab(-12000);
+}
+
+void Lift15::skipForward()
+{
+  adjust -= 2;
+}
+
+void Lift15::skipBack()
+{
+  adjust += 5;
 }

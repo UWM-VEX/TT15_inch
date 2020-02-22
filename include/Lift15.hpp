@@ -16,10 +16,12 @@ public:
   void angleGrabber(int degrees);
   void moveUp();
   void moveDown();
-  void moveToCube();
+  void moveToCube(int hi = 1);
   void grabCube();
   void releaseCube();
   void cubeGrabEasy();
+  void skipForward();
+  void skipBack();
   int getHeight() { return height; };
   int degrees() { return (int)lowerLeftMotor->getPosition(); }
 
@@ -35,6 +37,7 @@ private:
   okapi::Motor * frontGrabberMotor;
   double gearRatio;
   int height;
+  int adjust;
 
 } typedef Lift15;
 

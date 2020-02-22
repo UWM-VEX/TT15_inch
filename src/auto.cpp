@@ -33,6 +33,12 @@ void Auto::turnDegrees(double degrees)
     drive->model().rotate(turnValue(d * -.01));
     pros::delay(2);
   }
+
+  while(abs(d = gyro->get_rotation() - finalDegrees) > DEGREES_MARGIN)
+  {
+    drive->model().rotate(turnValue(d * -.01));
+    pros::delay(2);
+  }
   drive->model().rotate(0);
 }
 
@@ -47,6 +53,8 @@ void Auto::redAuto()
 {
   driveStraight(.7);
   pros::delay(500); //go forward to tower
+  driveStraight(0);
+  grabForMillis(250);
 }
 
 void Auto::blueAuto()
@@ -93,6 +101,18 @@ double Auto::turnValue(double diff, double margin)
     diff = margin;
   else if(diff < -margin)
     diff = -margin;
+
+  if(abs(diff) < .1)
+  {
+    if(diff < 0)
+    {
+      diff = .1;
+    }
+    else
+    {
+      diff = -.1;
+    }
+  }
 
   return diff;
 }

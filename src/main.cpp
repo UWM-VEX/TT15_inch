@@ -3,15 +3,15 @@
 #define _DIGITAL_SENSOR_PORT_ 'G'
 int lowerLeftMotor = 20;
 int upperLeftMotor = 15;
-int lowerRightMotor = 13;
-int upperRightMotor = 14;
+int lowerRightMotor = 14;
+int upperRightMotor = 5;
 int8_t backLeftMotor = 1;
 int8_t frontLeftMotor = 9;
 int8_t backRightMotor = 2;
 int8_t frontRightMotor = 10;
 int angleMotor = 8;
-int frontGrabMotor = 11;
-int backGrabMotor = 12;
+int frontGrabMotor = 12;
+int backGrabMotor = 13;
 int visionSensor = 4;
 int gyroPort = 3;
 
@@ -43,12 +43,13 @@ void initialize() {
 	pros::lcd::set_text(6, "_Red_______________________Blue_");
 	pros::lcd::register_btn0_cb(left);
 	pros::lcd::register_btn2_cb(right);
-	//pros::lcd::initialize();
-	//pros::lcd::set_text(1, "Hello PROS User!");
 
 	//pros::lcd::register_btn1_cb(on_center_button);
 	// RobotDrive.initDrive(frontLeftMotor,backLeftMotor,-frontRightMotor,-backRightMotor);
-	// gyro.reset();
+	gyro.reset();
+	while(gyro.is_calibrating())
+		pros::delay(50);
+	pros::lcd::set_text(3, "Gyro initialized");
 
 //	lcdModeSelect();
 }
@@ -60,21 +61,19 @@ void competition_initialize() {}
 
 
 void autonomous() {
-	// Auto a(myChassis, & gyro, & lift);
-	// a.moveDistance(3_ft);
-	// a.turnDegrees(90);
-	while(gyro.is_calibrating())
-		pros::delay(50);
-	// auton.driveStraight(.9);
-	// pros::delay(250);
-	// lift.angleGrabber(0);
-	// auton.turnDegrees(180);
-	// pros::delay(1000);
-	// auton.turnDegrees(-270);
-	// pros::delay(1000);
-	// auton.turnDegrees(90);
+	Auto a(myChassis, & gyro, & lift);
+	a.moveDistance(3_ft);
+	a.turnDegrees(90);
+	auton.driveStraight(.9);
+	pros::delay(250);
+	lift.angleGrabber(0);
+	auton.turnDegrees(180);
+	pros::delay(1000);
+	auton.turnDegrees(-270);
+	pros::delay(1000);
+	auton.turnDegrees(90);
 
-	auton.activate();
+	// auton.activate();
 }
 
 
@@ -86,40 +85,39 @@ void opcontrol() {
 
 	bool r1OnLast = false, r2OnLast = false;
 
-	int control = 1;
+	int control = 4;
 	if(!partner.isConnected())
 		control = 3;
 
 
 	while(true){
 
-		// pros::lcd::print(0, "%d %d", lift.getHeight(), lift.degrees());
-		//
+
 		pros::lcd::print(1, "%d %d %d", (int)gyro.get_pitch(), (int)gyro.get_yaw(), (int)gyro.get_rotation());
 		pros::lcd::print(2, "%d", lift.degrees());
 
 		bool r1On = master.getDigital(ControllerDigital::R1);
 		bool r2On = master.getDigital(ControllerDigital::R2);
 
-		if(!r1OnLast && r1On)
-		{
-			if(control < 4) ++control;
-			r1OnLast = true;
-		}
-		else if(!r1On && r1OnLast)
-		{
-			r1OnLast = false;
-		}
-
-		if(!r2OnLast && r2On)
-		{
-			if(control > 1) --control;
-			r2OnLast = true;
-		}
-		else if(!r2On && r2OnLast)
-		{
-			r2OnLast = false;
-		}
+		// if(!r1OnLast && r1On)
+		// {
+		// 	if(control < 4) ++control;
+		// 	r1OnLast = true;
+		// }
+		// else if(!r1On && r1OnLast)
+		// {
+		// 	r1OnLast = false;
+		// }
+		//
+		// if(!r2OnLast && r2On)
+		// {
+		// 	if(control > 1) --control;
+		// 	r2OnLast = true;
+		// }
+		// else if(!r2On && r2OnLast)
+		// {
+		// 	r2OnLast = false;
+		// }
 
 		switch (control) {
 			case 1:
@@ -211,7 +209,7 @@ void control2(okapi::Controller & master, okapi::Controller & partner)
 	float rightX = master.getAnalog(okapi::ControllerAnalog::rightX);
 	float rightY = master.getAnalog(okapi::ControllerAnalog::rightY);
 
-	// myChassis->model().tank(leftY, rightY);
+	// myChassis->model().tank(leftY, rightY)
 	myChassis->model().arcade(leftY, leftX);
 	//opcontrolDrive.arcade(leftY, leftX);
 
@@ -278,7 +276,86 @@ void control3(okapi::Controller & master, okapi::Controller & partner)
 
 void control4(okapi::Controller & master, okapi::Controller & partner)
 {
+ //master:
+ //left stick: turning
+ //right stick: forward/backward
+ //r2: slow mode
 
+ //parter:
+ //left stick: precise control ~
+ //right stick: control angle ~
+ //letter buttons: exact ~
+ //r1: grab ~
+ //r2: release ~
+
+ 	static bool pUpOnLast = false, pDownOnLast = false, goingToCube = false;
+	static double degrees = 0;
+
+ 	float leftX = master.getAnalog(okapi::ControllerAnalog::leftX);
+ 	float leftY = master.getAnalog(okapi::ControllerAnalog::leftY);
+ 	float rightX = master.getAnalog(okapi::ControllerAnalog::rightX);
+ 	float rightY = master.getAnalog(okapi::ControllerAnalog::rightY);
+
+	if(master.getDigital(ControllerDigital::R2))
+	{
+		rightY *= .5;
+		leftX *= .5;
+	}
+
+ 	myChassis->model().arcade(rightY, rightX);
+
+ 	double pLeftY= partner.getAnalog(okapi::ControllerAnalog::leftY);
+	if(std::abs(pLeftY) > .1)
+	{
+ 		lift.moveLift(pLeftY);
+		goingToCube = false;
+		degrees = lift.degrees();
+	}
+	else if(partner.getDigital(ControllerDigital::B))
+	{
+		lift.moveToCube(1);
+		goingToCube = true;
+	}
+	else if(partner.getDigital(ControllerDigital::A))
+	{
+		lift.moveToCube(2);
+		goingToCube = true;
+	}
+	else if(partner.getDigital(ControllerDigital::Y))
+	{
+		lift.moveToCube(3);
+		goingToCube = true;
+	}
+	else if(partner.getDigital(ControllerDigital::X))
+	{
+		lift.moveToCube(4);
+		goingToCube = true;
+	}
+	else if (!goingToCube)
+		lift.moveMotorToHeight((int)std::abs(degrees));
+
+
+ 	if(partner.getDigital(ControllerDigital::R1))
+ 		lift.grabCube();
+ 	else if(partner.getDigital(ControllerDigital::R2))
+ 		lift.releaseCube();
+ 	else
+ 		lift.grab(0);
+
+	double pRightY = partner.getAnalog(okapi::ControllerAnalog::rightY) * 260;
+	if(pRightY > 0.07)
+	{
+ 		// lift.angleGrabber(std::abs(partner.getAnalog(okapi::ControllerAnalog::rightY) * 260));
+		// lift.skipBack();
+		lift.angleGrabber(pRightY);
+	}
+	else if(pRightY < -0.07)
+	{
+		lift.skipForward();
+		// lift.angleGrabber(10);
+	}
+	else
+		lift.angleGrabber(0);
 }
 
 void left()
