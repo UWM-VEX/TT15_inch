@@ -30,11 +30,11 @@ Lift15::Lift15(int llm, int lrm, int ulm, int urm, int am, int bgm, int fgm)
   heights[0] = 0; //zero height
   heights[1] = 50; //max height
   heights[2] = 150; //cube 3
-  heights[3] = 300; //cube 4
+  heights[3] = 300; //low tower
   heights[4] = 450; //max
   heights[5] = 450; //max height
 
-  heights[6] = 730; //blank 1
+  heights[6] = 390; //middle height
   heights[7] = 550; //blank 2
   heights[8] = 50;  //blank 3
 

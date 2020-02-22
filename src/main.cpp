@@ -62,18 +62,20 @@ void competition_initialize() {}
 
 void autonomous() {
 	Auto a(myChassis, & gyro, & lift);
-	a.moveDistance(3_ft);
-	a.turnDegrees(90);
-	auton.driveStraight(.9);
-	pros::delay(250);
-	lift.angleGrabber(0);
-	auton.turnDegrees(180);
-	pros::delay(1000);
-	auton.turnDegrees(-270);
-	pros::delay(1000);
-	auton.turnDegrees(90);
+	// a.moveDistance(3_ft);
+	// a.turnDegrees(90);
+	// auton.driveStraight(.9);
+	// pros::delay(250);
+	while(gyro.is_calibrating())
+		pros::delay(20);
+	// lift.angleGrabber(0);
+	// auton.turnDegrees(180);
+	// pros::delay(1000);
+	// auton.turnDegrees(-270);
+	// pros::delay(1000);
+	// auton.turnDegrees(90);
 
-	// auton.activate();
+	auton.activate();
 }
 
 
@@ -328,25 +330,30 @@ void control4(okapi::Controller & master, okapi::Controller & partner)
 	}
 	else if(partner.getDigital(ControllerDigital::X))
 	{
-		lift.moveToCube(4);
+		lift.moveToCube(6);
 		goingToCube = true;
 	}
 	else if (!goingToCube)
 		lift.moveMotorToHeight((int)std::abs(degrees));
 
-
- 	if(partner.getDigital(ControllerDigital::R1))
+	bool pR1On = partner.getDigital(ControllerDigital::R1);
+  bool mR2On = master.getDigital(ControllerDigital::R2);
+ 	if(pR1On)
  		lift.grabCube();
- 	else if(partner.getDigital(ControllerDigital::R2))
+ 	else if(mR2On)
  		lift.releaseCube();
  	else
  		lift.grab(0);
 
-	double pRightY = partner.getAnalog(okapi::ControllerAnalog::rightY) * 260;
+	double pRightY = partner.getAnalog(okapi::ControllerAnalog::rightY);
 	if(pRightY > 0.07)
 	{
  		// lift.angleGrabber(std::abs(partner.getAnalog(okapi::ControllerAnalog::rightY) * 260));
 		// lift.skipBack();
+
+		if(pRightY > .9) pRightY = 260;
+		else pRightY *= 260;
+		if(partner.getDigital(okapi::ControllerDigital::R2)) pRightY+=30;
 		lift.angleGrabber(pRightY);
 	}
 	else if(pRightY < -0.07)

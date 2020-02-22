@@ -42,20 +42,45 @@ void Auto::turnDegrees(double degrees)
   drive->model().rotate(0);
 }
 
-void Auto::grabForMillis(int millis)
+void Auto::grabForMillis(int millis, int power)
 {
-  lift->grabCube();
+  lift->grab(power);
   pros::delay(millis);
   lift->grab(0);
 }
 
 void Auto::redAuto()
 {
-  driveStraight(.7);
-  pros::delay(500); //go forward to tower
+  int count = 0;
+  lift->moveMotorToHeight(350);
+  while(count < 27)
+  {
+    driveStraight(1);
+    ++count;
+    pros::delay(25);
+  }
+
+  lift->angleGrabber(260);
   driveStraight(0);
-  grabForMillis(250);
+  count = 0;
+  while(count < 60)
+  {
+    ++count;
+    pros::delay(25);
+  }
+  // pros::delay(500); //go forward to tower
+  lift->moveMotorToHeight(400);
+  grabForMillis(1000, -12000);
+  count = 0;
+  while(count < 10)
+  {
+    driveStraight(-1);
+    ++count;
+    pros::delay(25);
+  }
+  driveStraight(0);
 }
+
 
 void Auto::blueAuto()
 {
@@ -104,7 +129,7 @@ double Auto::turnValue(double diff, double margin)
 
   if(abs(diff) < .1)
   {
-    if(diff < 0)
+    if(diff > 0)
     {
       diff = .1;
     }

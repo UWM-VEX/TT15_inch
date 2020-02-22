@@ -33,7 +33,7 @@ public:
 	void blueAuto();
 	void driveStraight(double power);
 	void activate();
-	void grabForMillis(int millis);
+	void grabForMillis(int millis, int power = 12000);
 
 private:
 	std::shared_ptr<okapi::ChassisController> drive;
